@@ -8,8 +8,8 @@ export class User {
     email: string;
     role_id: string;
     tasks: Tasks[];
-    auth: Auth | null;
-    role: Role | null;
+    auth: Auth | Partial<Auth> |  null;
+    role: Role | Partial<Role> |  null;
   
     constructor(
       id: string,

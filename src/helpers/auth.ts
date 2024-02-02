@@ -6,7 +6,7 @@ const SECRET = process.env.SECRET || "random-password"
 
 export const random = () => crypto.randomBytes(128).toString('base64');
 export const authentication = (salt: string, password: string ) => {
-    return crypto.createHmac('sha256',[salt, password].join('/')).update(SECRET).digest()
+    return crypto.createHmac('sha256',[salt, password].join('/')).update(SECRET).digest().toString("base64")
 } 
 
 export const permissions_allowed = (permission: String, user_permissions: String[], res: Response)=>{
