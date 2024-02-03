@@ -11,10 +11,6 @@ export class Role {
       this.name = name;
       this.permissions = permissions;
       this.users = users;
-      this.getPermissionList = this.getPermissionList.bind (this)
     }
 
-    public getPermissionList (){
-      return this.permissions.split(";")
-    }
   }

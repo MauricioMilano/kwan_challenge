@@ -10,6 +10,7 @@ export class User {
     tasks: Tasks[];
     auth: Auth | Partial<Auth> |  null;
     role: Role | Partial<Role> |  null;
+    token: String | null;
   
     constructor(
       id: string,

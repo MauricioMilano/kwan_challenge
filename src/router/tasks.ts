@@ -2,7 +2,7 @@ import express from 'express';
 
 import { PrismaClient } from '@prisma/client';
 import { TasksController } from '../controllers/tasks';
-import { Authenticate } from '../middleware/auth';
+import { Authenticate } from '../middlewares/auth';
 export default (router: express.Router, repository: PrismaClient) => {
     const tasks = new TasksController(repository);
     router.get("/tasks/all", Authenticate, tasks.getAll)

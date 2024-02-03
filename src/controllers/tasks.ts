@@ -21,17 +21,19 @@ export class TasksController {
 
     }
 
-    public async create(req: Request, res: Response
+    public async create(req: Request | Partial<Request>, res: Response | Partial<Response>
     ) {
         try {
             
             const { user, permissions } = req;
-
             if (!permissions_allowed(TASK_PERMISSIONS.create, permissions, res)) {
                 return
             }
-
+            
             const { name, sumary } = req.body;
+            if (!name || !sumary ){ 
+                return res.status(422).send(APIerror("Missing body properties")).end()
+            }
             const task = await this.repository.tasks.create({
                 data: {
                     name: name,
@@ -47,11 +49,11 @@ export class TasksController {
             res.status(200).json(task).end()
         } catch (error) {
             console.error(error)
-            res.status(500).send(APIerror("Internal server error"))
+            return res.status(500).send(APIerror("Internal server error")).end()
         }
     }
 
-    public async get(req: Request, res: Response
+    public async get(req: Request | Partial<Request>, res: Response | Partial<Response>
     ) {
         try {
             const { user, permissions } = req;
@@ -78,10 +80,10 @@ export class TasksController {
 
         } catch (error) {
             console.error(error)
-            res.status(500).send(APIerror("Internal server error" ))
+            return res.status(500).send(APIerror("Internal server error" )).end()
         }
     }
-    public async getAll(req: Request, res: Response
+    public async getAll(req: Request | Partial<Request>, res: Response | Partial<Response>
     ) {
         try {
             const { permissions } = req;
@@ -110,11 +112,11 @@ export class TasksController {
 
         } catch (error) {
             console.error(error)
-            res.status(500).send(APIerror("Internal server error" ))
+            res.status(500).send(APIerror("Internal server error" )).end()
         }
     }
 
-    public async perform(req: Request, res: Response
+    public async perform(req: Request | Partial<Request>, res: Response | Partial<Response>
     ) {
         try {
             const { user, permissions } = req;
@@ -129,12 +131,11 @@ export class TasksController {
                 }
             })
             if (!task) {
-                res.status(404).send(APIerror("Task not found" ))
+                return res.status(404).send(APIerror("Task not found" )).end()
 
-                return
             }
             if (task.date_performed) {
-                res.status(400).send(APIerror("Task already performed" ))
+                res.status(400).send(APIerror("Task already performed" )).end()
                 return
             }
             task = await this.repository.tasks.update({
@@ -149,11 +150,11 @@ export class TasksController {
             res.status(200).json(task).end()
         } catch (error) {
             console.error(error)
-            res.status(500).send(APIerror("Internal server error" ))
+            res.status(500).send(APIerror("Internal server error" )).end()
         }
     }
 
-    public async delete(req: Request, res: Response
+    public async delete(req: Request | Partial<Request>, res: Response | Partial<Response>
     ) {
         try {
 
@@ -165,7 +166,7 @@ export class TasksController {
             }
             let task = await this.repository.tasks.findFirst({ where: {id: task_id}})
             if (!task) {
-                res.status(404).send({message: "Task Not found"})
+                res.status(404).send({message: "Task not found"}).end()
                 return
             }
             task = await this.repository.tasks.delete({
@@ -176,7 +177,7 @@ export class TasksController {
             res.status(200).json(task).end()
         } catch (error) {
             console.error(error)
-            res.status(500).send(APIerror("Internal server error" ))
+            return res.status(500).send(APIerror("Internal server error" )).end()
         }
     }
 }

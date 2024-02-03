@@ -4,8 +4,7 @@ import { User } from "models/user";
 import { Request } from "../models/API/request";
 
 
-
-export const Authenticate = (req: Request, res:express.Response, next: express.NextFunction):void => {
+export const Authenticate = (req: Partial<Request> | Request , res: Partial<express.Response>|express.Response, next: express.NextFunction):void => {
     const authHeader = req.headers.authorization;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -15,8 +14,6 @@ export const Authenticate = (req: Request, res:express.Response, next: express.N
         const user = JWTHelper.verify(token);
         req.user = user;
         req.permissions = user.role.permissions.split(";")
-
-  
         next();
       } catch (error) {
         res.status(401).json({ message: error.message });
