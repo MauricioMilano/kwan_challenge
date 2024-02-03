@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   db:
+    container_name: database
     image: mysql:latest
     restart: always
     environment:
@@ -10,3 +11,25 @@ services:
       MYSQL_DATABASE: app
     ports:
       - "3306:3306"
+    networks:
+      - app-network
+  app: 
+    build: .
+    environment:
+      - APP_NAME=kwan_challenge
+      - SECRET=!231231231!!!!
+      - JWT_SECRET=ultra_secret_pass
+      - DATABASE_URL="mysql://root:root@db:3306/app"
+
+    ports: 
+      - 3000:3000
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+networks: 
+  app-network:
+    driver: bridge
+
