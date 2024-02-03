@@ -22,7 +22,6 @@ func main() {
 	port := getEnv("RABBITMQ_PORT", "5672")
 	queue := getEnv("RABBITMQ_QUEUE", "default")
 	connection_str := fmt.Sprintf("amqp://%s:%s@%s:%s/", user, pass, host, port)
-	log.Println(connection_str)
 	conn, err := amqp.Dial(connection_str)
 	if err != nil {
 		log.Println(err)
