@@ -20,7 +20,7 @@ Then run docker-compose startup command:
 ```sh 
 docker-compose up -d
 ``` 
-Task Api API should run in http://localhost:3000
+Task API should run in http://localhost:3000
 
 ### Features 
 
