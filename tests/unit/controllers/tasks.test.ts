@@ -10,7 +10,7 @@ import { APIerror } from "../../../src/models/API/error";
 import { TASK_PERMISSIONS } from "../../../src/config";
 import { TasksController } from "../../../src/controllers/tasks";
 import { User } from "../../../src/models/user";
-
+import { RabbitMQService } from "../../../src/services/rabbitmq"
 
 jest.mock("@prisma/client/extension", () => {
   const mockPrismaClient = {
@@ -20,13 +20,22 @@ jest.mock("@prisma/client/extension", () => {
       findFirst: jest.fn(),
       delete: jest.fn(),
       update: jest.fn(),
-      
+
     },
   };
   return {
     PrismaClient: jest.fn(() => mockPrismaClient),
   };
 });
+jest.mock("../../../src/services/rabbitmq", () => {
+  const mockRabbitMQ = {
+    send: jest.fn()
+  }
+  return {
+    RabbitMQService: jest.fn(() => mockRabbitMQ)
+  }
+}
+)
 
 
 jest.mock("../../../src/helpers/auth", () => ({
@@ -69,8 +78,8 @@ const mockResponse = {
 };
 
 const client = new PrismaClient()
-
-const tasksController = new TasksController(client);
+const QueueCon = new RabbitMQService("amqp://", "default")
+const tasksController = new TasksController(client, QueueCon);
 
 
 describe("TasksController class", () => {

@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   db:
-    container_name: database
+    container_name: db
     image: mysql:latest
     restart: always
     environment:
@@ -14,13 +14,15 @@ services:
     networks:
       - app-network
   app: 
+    container_name: app
     build: .
     environment:
       - APP_NAME=kwan_challenge
-      - SECRET=!231231231!!!!
+      - SECRET=ultra_secret_pass
       - JWT_SECRET=ultra_secret_pass
       - DATABASE_URL="mysql://root:root@db:3306/app"
-
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_QUEUE=default
     ports: 
       - 3000:3000
     restart: always
@@ -29,7 +31,32 @@ services:
     networks:
       - app-network
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+      RABBITMQ_DEFAULT_VHOST: /
+      RABBITMQ_HIPE_COMPILE: 0
+    networks:
+      - app-network
+
+  worker:
+    build: ./worker
+    container_name: worker
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_QUEUE=default
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped
+    networks:
+      - app-network
+
 networks: 
   app-network:
     driver: bridge
-

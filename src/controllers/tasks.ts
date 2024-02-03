@@ -7,12 +7,14 @@ import tasks from "router/tasks";
 import { permissions_allowed } from "../helpers/auth"
 import { APIerror } from "../models/API/error";
 import { TASK_PERMISSIONS } from "../config";
+import { RabbitMQService } from "services/rabbitmq";
 export class TasksController {
 
     repository: PrismaClient;
-
-    constructor(repository: PrismaClient) {
+    queueCon: RabbitMQService;
+    constructor(repository: PrismaClient, queueCon: RabbitMQService) {
         this.repository = repository
+        this.queueCon = queueCon
         this.create = this.create.bind(this)
         this.get = this.get.bind(this)
         this.delete = this.delete.bind(this)
@@ -146,7 +148,7 @@ export class TasksController {
                     date_performed: new Date()
                 }
             });
-
+            this.queueCon.send( `The tech ${user.name} performed the task ${task.name} on date ${task.date_performed}`)
             res.status(200).json(task).end()
         } catch (error) {
             console.error(error)
