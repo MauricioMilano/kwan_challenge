@@ -2,10 +2,10 @@
 import * as amqp from "amqplib";
 
 export class RabbitMQService {
-  private connectionURL: string;
-  private queueName: string;
-  private connection: amqp.Connection;
-  private channel: amqp.Channel;
+  connectionURL: string;
+  queueName: string;
+  connection: amqp.Connection;
+  channel: amqp.Channel;
 
   constructor(connectionURL: string, queueName: string) {
     this.connectionURL = connectionURL;
